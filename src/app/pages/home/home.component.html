@@ -1,0 +1,87 @@
+<section id="home">
+  <div class="card main-card">
+    <h2 class="side-color">Properties</h2>
+    <div class="row m-0" *ngIf="properties">
+      <div
+        class="col-lg-4 col-md-6 my-3"
+        *ngFor="
+          let property of properties?.data
+            | paginate
+              : {
+                  itemsPerPage: properties.per_page,
+                  currentPage: properties.current_page,
+                  totalItems: properties.total
+                }
+        "
+      >
+        <div class="card property-card">
+          <div class="delete-btn" *ngIf="property?.user?.id == user?.id">
+            <button (click)="deleteProperty(property)">
+              <div
+                class="d-flex justify-content-center align-items-center w-100 h-100"
+              >
+                <p class="m-0">&#10006;</p>
+              </div>
+            </button>
+          </div>
+          <div class="carousel-images">
+            <ngb-carousel
+              [interval]="0"
+              *ngIf="property?.images?.length > 0"
+              class="outline-none"
+            >
+              <ng-template ngbSlide *ngFor="let img of property?.images">
+                <div class="img-wrapper">
+                  <img *ngIf="img" [src]="img" class="img-fluid" />
+                </div>
+              </ng-template>
+            </ngb-carousel>
+          </div>
+          <div class="description d-flex flex-column align-items-start">
+            <h3 class="title" (click)="openProperty(property)">
+              {{ property?.title | titlecase }}
+            </h3>
+            <p class="mb-0 main-color font-weight-bold">
+              By: {{ property?.user?.name }}
+            </p>
+            <div class="rating my-2">
+              <i
+                class="fas fa-star"
+                *ngFor="let i of [].constructor(+property?.feedbacks_avg || 0)"
+              ></i>
+              <i
+                class="fas fa-star empty-star"
+                *ngFor="
+                  let i of [].constructor(5 - (+property?.feedbacks_avg || 0))
+                "
+              ></i>
+
+              <span class="count">({{ property?.feedbacks_count || 0 }})</span>
+            </div>
+            <p>
+              {{
+                property?.description?.length > 200
+                  ? property?.description.slice(0, 200) + "..."
+                  : property?.description
+              }}
+            </p>
+            <div
+              class="d-flex justify-content-between align-items-end mt-auto w-100"
+            >
+              <span class="main-color font-weight-bold">Price</span>
+              <span>{{
+                property?.price || 0 | number: "1.2-2" | currency
+              }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <pagination-controls
+      previousLabel="Prev"
+      nextLabel="Next"
+      (pageChange)="pageChanged($event)"
+      [autoHide]="true"
+    ></pagination-controls>
+  </div>
+</section>
